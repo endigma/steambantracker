@@ -1,15 +1,7 @@
 import { Handlers, PageProps } from "$fresh/server.ts";
 import { useSignal } from "@preact/signals";
 
-import {
-  GetPlayerBans,
-  GetPlayerSummaries,
-  loadPlayers,
-  type Player,
-  type PlayerBans,
-  type PlayerSummary,
-  trackPlayer,
-} from "@/utils/steam.ts";
+import { loadPlayers, type Player, trackPlayer } from "@/utils/steam.ts";
 
 import { redirect } from "@/utils/http.ts";
 import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
@@ -44,29 +36,24 @@ export default function Home(props: PageProps<Deno.KvEntry<Player>[]>) {
       <main className="container-fluid">
         <h1>Steam Account Tracker</h1>
 
-        <div className="flex flex-row gap-2">
-          <form method="POST">
-            <fieldset role="group">
-              <input
-                name="steamid64"
-                required
-                minLength={17}
-                maxLength={17}
-                placeholder="SteamID64 of player"
-              />
-              <button type="submit">Track</button>
-            </fieldset>
-          </form>
-          <form method="POST" action="/refresh">
-            <button type="submit">Refresh All</button>
-          </form>
-        </div>
+        <form method="POST">
+          <fieldset role="group">
+            <input
+              name="steamid64"
+              required
+              minLength={17}
+              maxLength={17}
+              placeholder="SteamID64 of player"
+            />
+            <button type="submit">Track</button>
+          </fieldset>
+        </form>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
           {props.data.sort((
             a,
             b,
-          ) => (isBanned(b.value) - isBanned(a.value))).map((
+          ) => (Number(isBanned(b.value)) - Number(isBanned(a.value)))).map((
             player,
           ) => (
             <article>
