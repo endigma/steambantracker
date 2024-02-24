@@ -32,14 +32,6 @@ export type Player = {
 
 const kv = await Deno.openKv();
 
-Deno.cron("sample cron", "*/10 * * * *", async () => {
-  const players = await loadPlayers();
-
-  for (const player of players) {
-    trackPlayer(player.value.summary.steamid);
-  }
-});
-
 export async function loadPlayers(): Promise<Deno.KvEntry<Player>[]> {
   const iter = await kv.list<Player>({ prefix: ["player"] });
   const players = [];
