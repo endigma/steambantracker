@@ -39,6 +39,10 @@ export async function loadPlayers(): Promise<Deno.KvEntry<Player>[]> {
   return players;
 }
 
+export async function deletePlayer(id: string) {
+  await kv.delete(["player", id]);
+}
+
 export async function trackPlayer(id: string): Promise<string> {
   const ok = await kv
     .set(["player", id], {

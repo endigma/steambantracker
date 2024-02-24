@@ -1,7 +1,11 @@
 import { Handlers, PageProps } from "$fresh/server.ts";
-import { useSignal } from "@preact/signals";
 
-import { loadPlayers, type Player, trackPlayer } from "@/utils/steam.ts";
+import {
+  deletePlayer,
+  loadPlayers,
+  type Player,
+  trackPlayer,
+} from "@/utils/steam.ts";
 
 import { redirect } from "@/utils/http.ts";
 import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
@@ -11,6 +15,17 @@ export const handler: Handlers<Deno.KvEntry<Player>[]> = {
     const players = await loadPlayers();
 
     return ctx.render(players);
+  },
+  async DELETE(req, ctx) {
+    const form = await req.formData();
+    const newTrackedPlayer = z.string().length(17);
+    const id = newTrackedPlayer.parse(form.get("steamid64"));
+
+    console.log("hi");
+
+    await deletePlayer(id);
+
+    return redirect("/");
   },
   async POST(req, ctx) {
     const form = await req.formData();
@@ -30,7 +45,6 @@ function isBanned(player: Player): boolean {
 }
 
 export default function Home(props: PageProps<Deno.KvEntry<Player>[]>) {
-  const count = useSignal(3);
   return (
     <>
       <main className="container-fluid">
@@ -97,6 +111,17 @@ export default function Home(props: PageProps<Deno.KvEntry<Player>[]>) {
                   </div>
                 </>
               )}
+
+              <footer>
+                <form method="POST" action="/delete">
+                  <input
+                    type="hidden"
+                    name="steamid64"
+                    value={player.value.summary.steamid}
+                  />
+                  <button type="submit">Delete</button>
+                </form>
+              </footer>
             </article>
           ))}
         </div>
