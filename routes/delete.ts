@@ -11,8 +11,6 @@ export const handler: Handlers<Deno.KvEntry<Player>[]> = {
     const newTrackedPlayer = z.string().length(17);
     const id = newTrackedPlayer.parse(form.get("steamid64"));
 
-    console.log("hi");
-
     await deletePlayer(id);
 
     return redirect("/");
