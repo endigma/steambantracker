@@ -12,11 +12,16 @@ import manifest from "./fresh.gen.ts";
 import config from "./fresh.config.ts";
 import { loadPlayers, trackPlayer } from "@/utils/steam.ts";
 
-Deno.cron("sample cron", "*/10 * * * *", async () => {
+function sleep(ms: number | undefined) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+Deno.cron("refresh players", "*/10 * * * *", async () => {
   const players = await loadPlayers();
 
   for (const player of players) {
     trackPlayer(player.value.summary.steamid);
+    await sleep(250);
   }
 });
 
