@@ -1,33 +1,16 @@
-name: Deploy
+name: Fly Deploy
 on:
   push:
-    branches: [main]
-  pull_request:
-    branches: main
-
+    branches:
+      - main    # change to main if needed
 jobs:
   deploy:
-    name: Deploy
+    name: Deploy app
     runs-on: ubuntu-latest
-
-    permissions:
-      id-token: write # Needed for auth with Deno Deploy
-      contents: read # Needed to clone the repository
-
+    concurrency: deploy-group    # optional: ensure only one action runs at a time
     steps:
-      - name: Clone repository
-        uses: actions/checkout@v4
-
-      - name: Install Deno
-        uses: denoland/setup-deno@v1
-        with:
-          deno-version: v1.x
-
-      - name: Build step
-        run: "deno task build" # 📝 Update the build command(s) if necessary
-
-      - name: Upload to Deno Deploy
-        uses: denoland/deployctl@v1
-        with:
-          project: "close-ant-77" # 📝 Update the deploy project name if necessary
-          entrypoint: "./main.ts" # 📝 Update the entrypoint if necessary
+      - uses: actions/checkout@v4
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+      - run: flyctl deploy --remote-only
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
