@@ -30,7 +30,7 @@ export type Player = {
   summary: PlayerSummary;
 };
 
-const kv = await Deno.openKv();
+const kv = await Deno.openKv(Deno.env.get("DB_LOCATION"));
 
 export async function loadPlayers(): Promise<Deno.KvEntry<Player>[]> {
   const iter = await kv.list<Player>({ prefix: ["player"] });

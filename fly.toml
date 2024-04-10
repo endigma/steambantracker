@@ -1,0 +1,33 @@
+# fly.toml app configuration file generated for steambantracker on 2024-04-10T11:21:29-03:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'steambantracker'
+primary_region = 'ewr'
+
+[build]
+
+[env]
+  PORT = '8080'
+  DB_LOCATION="/litefs/my.db"
+
+[processes]
+  app = 'run -A main.ts'
+
+[http_service]
+  internal_port = 8081
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ['app']
+
+[mounts]
+  source = "litefs"
+  destination = "/var/lib/litefs"
+
+[[vm]]
+  memory = '1gb'
+  cpu_kind = 'shared'
+  cpus = 1
